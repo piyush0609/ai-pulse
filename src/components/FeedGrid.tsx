@@ -15,9 +15,10 @@ export default function FeedGrid({ items }: FeedGridProps) {
   const counts = useMemo(() => {
     const result: Record<FeedCategory, number> = {
       all: items.length,
+      workflows: 0,
       tools: 0,
+      tutorials: 0,
       opensource: 0,
-      tips: 0,
     };
     
     for (const item of items) {

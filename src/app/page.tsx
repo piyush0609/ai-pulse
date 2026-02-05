@@ -14,12 +14,20 @@ export default async function Home() {
         <Header />
         <FeedGrid items={items} />
         
-        <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-sm text-gray-500">
-          <p>
-            Aggregating from GitHub Trending • Hugging Face • r/LocalLLaMA • r/MachineLearning • Hacker News • Product Hunt • arXiv
+        <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-500 mb-4">
+            <span className="flex items-center gap-1">
+              <span>🔥</span> Trending today
+            </span>
+            <span className="flex items-center gap-1">
+              <span>⭐</span> High quality
+            </span>
+          </div>
+          <p className="text-center text-sm text-gray-500">
+            Sources: Simon Willison • Latent Space • r/ChatGPTPro • r/ClaudeAI • r/LocalLLaMA • GitHub • Hacker News • Product Hunt
           </p>
-          <p className="mt-2">
-            Updated every 30 minutes • Focus: Tools, Open Source, Tips & Techniques
+          <p className="text-center text-xs text-gray-400 mt-2">
+            Updated every 30 minutes • Focus: Making you better at AI
           </p>
         </footer>
       </div>
