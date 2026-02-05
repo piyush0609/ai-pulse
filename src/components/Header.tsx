@@ -15,7 +15,7 @@ export default function Header() {
         </div>
       </div>
       <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
-        Curated content to make you better at using AI — prompting techniques, workflow tips, practical tutorials, and tools that actually help.
+        Curated content to make you better at using AI — workflows, <span className="text-red-600 dark:text-red-400 font-medium">safety practices</span>, practical tutorials, and tools that help.
       </p>
     </header>
   );

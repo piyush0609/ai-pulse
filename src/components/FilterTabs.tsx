@@ -11,6 +11,7 @@ interface FilterTabsProps {
 const filters: { key: FeedCategory; label: string; icon: string }[] = [
   { key: 'all', label: 'All', icon: '📊' },
   { key: 'workflows', label: 'Workflows', icon: '⚡' },
+  { key: 'safety', label: 'Safety', icon: '🛡️' },
   { key: 'tools', label: 'Tools', icon: '🛠️' },
   { key: 'tutorials', label: 'Tutorials', icon: '📚' },
   { key: 'opensource', label: 'Open Source', icon: '🐙' },

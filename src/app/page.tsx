@@ -17,17 +17,17 @@ export default async function Home() {
         <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-500 mb-4">
             <span className="flex items-center gap-1">
-              <span>🔥</span> Trending today
+              <span>🔥</span> Highly relevant
             </span>
             <span className="flex items-center gap-1">
               <span>⭐</span> High quality
             </span>
           </div>
           <p className="text-center text-sm text-gray-500">
-            Sources: Simon Willison • Latent Space • r/ChatGPTPro • r/ClaudeAI • r/LocalLLaMA • GitHub • Hacker News • Product Hunt
+            Sources: Simon Willison • Latent Space • Hugging Face • GitHub • Hacker News • r/LocalLLaMA • r/ClaudeAI
           </p>
           <p className="text-center text-xs text-gray-400 mt-2">
-            Updated every 30 minutes • Focus: Making you better at AI
+            Updated every 30 minutes • Curated for practitioners
           </p>
         </footer>
       </div>

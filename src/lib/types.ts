@@ -1,4 +1,4 @@
-export type FeedCategory = 'all' | 'workflows' | 'tools' | 'tutorials' | 'opensource';
+export type FeedCategory = 'all' | 'workflows' | 'safety' | 'tools' | 'tutorials' | 'opensource';
 
 export interface FeedItem {
   id: string;
@@ -10,5 +10,7 @@ export interface FeedItem {
   date: Date;
   category: FeedCategory;
   quality?: 'hot' | 'top' | null; // 🔥 trending today, ⭐ high engagement
-  engagement?: number; // For sorting/scoring
+  engagement?: number;
+  relevanceScore?: number; // 0-100 based on keyword matches
+  whyMatters?: string; // One-liner on why this is useful
 }

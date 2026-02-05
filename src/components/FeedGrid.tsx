@@ -16,6 +16,7 @@ export default function FeedGrid({ items }: FeedGridProps) {
     const result: Record<FeedCategory, number> = {
       all: items.length,
       workflows: 0,
+      safety: 0,
       tools: 0,
       tutorials: 0,
       opensource: 0,
@@ -31,8 +32,17 @@ export default function FeedGrid({ items }: FeedGridProps) {
   }, [items]);
   
   const filteredItems = useMemo(() => {
-    if (activeFilter === 'all') return items;
-    return items.filter(item => item.category === activeFilter);
+    let filtered = activeFilter === 'all' 
+      ? items 
+      : items.filter(item => item.category === activeFilter);
+    
+    // Sort by relevance score within each category view
+    return filtered.sort((a, b) => {
+      const aScore = a.relevanceScore || 0;
+      const bScore = b.relevanceScore || 0;
+      if (aScore !== bScore) return bScore - aScore;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
   }, [items, activeFilter]);
   
   return (
