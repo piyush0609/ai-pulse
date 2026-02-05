@@ -16,10 +16,10 @@ export default async function Home() {
         
         <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-sm text-gray-500">
           <p>
-            Aggregating from Hacker News, Product Hunt, TechCrunch, AI News, and MIT Tech Review
+            Aggregating from GitHub Trending • Hugging Face • r/LocalLLaMA • r/MachineLearning • Hacker News • Product Hunt • arXiv
           </p>
           <p className="mt-2">
-            Updated every 30 minutes • Built with Next.js
+            Updated every 30 minutes • Focus: Tools, Open Source, Tips & Techniques
           </p>
         </footer>
       </div>

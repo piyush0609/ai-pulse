@@ -1,4 +1,4 @@
-export type FeedCategory = 'all' | 'tools' | 'news' | 'tutorials';
+export type FeedCategory = 'all' | 'tools' | 'opensource' | 'tips';
 
 export interface FeedItem {
   id: string;

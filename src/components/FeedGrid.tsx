@@ -16,8 +16,8 @@ export default function FeedGrid({ items }: FeedGridProps) {
     const result: Record<FeedCategory, number> = {
       all: items.length,
       tools: 0,
-      news: 0,
-      tutorials: 0,
+      opensource: 0,
+      tips: 0,
     };
     
     for (const item of items) {
@@ -44,7 +44,8 @@ export default function FeedGrid({ items }: FeedGridProps) {
       
       {filteredItems.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
-          No items found for this filter.
+          <p className="text-4xl mb-3">🔍</p>
+          <p>No items found for this filter.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

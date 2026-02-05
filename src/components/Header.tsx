@@ -10,7 +10,7 @@ export default function Header() {
         </h1>
       </div>
       <p className="text-gray-600 dark:text-gray-400">
-        Your daily dose of AI news, tools, and tutorials from across the web
+        Practitioner-focused AI: tools, open source models, prompting techniques
       </p>
     </header>
   );

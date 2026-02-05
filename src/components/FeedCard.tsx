@@ -22,6 +22,18 @@ function formatDate(date: Date): string {
   });
 }
 
+const categoryColors: Record<string, string> = {
+  tools: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
+  opensource: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+  tips: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
+};
+
+const categoryLabels: Record<string, string> = {
+  tools: '🛠️ Tool',
+  opensource: '🐙 Open Source',
+  tips: '💡 Tips',
+};
+
 export default function FeedCard({ item }: FeedCardProps) {
   return (
     <a
@@ -30,10 +42,15 @@ export default function FeedCard({ item }: FeedCardProps) {
       rel="noopener noreferrer"
       className="block group"
     >
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 h-full">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 h-full flex flex-col">
         <div className="flex items-start justify-between gap-3 mb-3">
-          <span className="text-2xl">{item.sourceIcon}</span>
-          <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">{item.sourceIcon}</span>
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+              {item.source}
+            </span>
+          </div>
+          <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
             {formatDate(item.date)}
           </span>
         </div>
@@ -42,13 +59,13 @@ export default function FeedCard({ item }: FeedCardProps) {
           {item.title}
         </h3>
         
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 flex-grow">
           {item.description}
         </p>
         
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
-            {item.source}
+        <div className="flex items-center justify-between mt-auto">
+          <span className={`text-xs font-medium px-2 py-1 rounded-full ${categoryColors[item.category] || 'bg-gray-100 text-gray-600'}`}>
+            {categoryLabels[item.category] || item.category}
           </span>
           <span className="text-xs text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity">
             Read more →
