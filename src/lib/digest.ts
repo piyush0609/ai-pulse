@@ -168,7 +168,9 @@ export async function synthesizeLLM(items: FeedItem[], apiKey: string): Promise<
   if (!response.ok) {
     const err = await response.text().catch(() => 'unknown');
     console.error(`LLM synthesis failed (${response.status}): ${err}`);
-    return synthesizeAlgorithmic(items);
+    const fallback = synthesizeAlgorithmic(items);
+    (fallback as any)._llmError = `${response.status}: ${err.slice(0, 200)}`;
+    return fallback;
   }
 
   const data = await response.json();
@@ -214,9 +216,11 @@ export async function synthesizeLLM(items: FeedItem[], apiKey: string): Promise<
       closingNote: parsed.closingNote || "That's the picture. You're caught up.",
       source: 'llm',
     };
-  } catch (err) {
+  } catch (err: any) {
     console.error('Failed to parse LLM response:', err, '\nRaw:', text.slice(0, 500));
-    return synthesizeAlgorithmic(items);
+    const fallback = synthesizeAlgorithmic(items);
+    (fallback as any)._llmError = `parse: ${err.message}. Raw: ${text.slice(0, 200)}`;
+    return fallback;
   }
 }
 

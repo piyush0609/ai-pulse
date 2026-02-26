@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
           summary: digest.summary.slice(0, 200),
           apiKeyPresent: !!apiKey,
           apiKeyPrefix: (apiKey || '').slice(0, 4),
+          _llmError: (digest as any)._llmError || null,
         });
       } catch (e: any) {
         return NextResponse.json({
