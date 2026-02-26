@@ -5,8 +5,8 @@ let client: Client | null = null;
 function getClient(): Client | null {
   if (client) return client;
 
-  const url = process.env.TURSO_DATABASE_URL;
-  const authToken = process.env.TURSO_AUTH_TOKEN;
+  const url = process.env.TURSO_DATABASE_URL?.trim();
+  const authToken = process.env.TURSO_AUTH_TOKEN?.trim();
   if (!url) return null;
 
   client = createClient({ url, authToken });
