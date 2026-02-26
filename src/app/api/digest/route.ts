@@ -3,6 +3,9 @@ import { fetchAllFeeds } from '@/lib/feeds';
 import { synthesizeAlgorithmic, synthesizeLLM } from '@/lib/digest';
 import { getCachedDigest, cacheDigest, isDbConfigured } from '@/lib/db';
 
+// Allow up to 60 seconds for feed fetching + LLM synthesis
+export const maxDuration = 60;
+
 // In-memory fallback when Turso isn't configured
 let memCache: any = null;
 let memCacheAt = 0;
