@@ -179,7 +179,16 @@ export async function synthesizeLLM(items: FeedItem[], apiKey: string): Promise<
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON found in LLM response');
-    const parsed = JSON.parse(jsonMatch[0]);
+
+    // Clean common LLM JSON issues: trailing commas, unescaped newlines
+    let jsonStr = jsonMatch[0]
+      .replace(/,\s*([}\]])/g, '$1')           // trailing commas
+      .replace(/[\u2018\u2019]/g, "'")          // smart quotes
+      .replace(/[\u201C\u201D]/g, '"')          // smart double quotes
+      .replace(/\u2011/g, '-')                  // non-breaking hyphen
+      .replace(/\u2013/g, '-')                  // en dash
+      .replace(/\u2014/g, '-');                 // em dash
+    const parsed = JSON.parse(jsonStr);
 
     // Map themes — annotations are inline with each item reference
     const allHighlights: DigestHighlight[] = [];
