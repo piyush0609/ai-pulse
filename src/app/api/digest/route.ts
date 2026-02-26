@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { fetchAllFeeds } from '@/lib/feeds';
 import { synthesizeAlgorithmic, synthesizeLLM } from '@/lib/digest';
 import { getCachedDigest, cacheDigest, isDbConfigured } from '@/lib/db';
@@ -11,25 +12,50 @@ let memCache: any = null;
 let memCacheAt = 0;
 const CACHE_TTL = 4 * 60 * 60 * 1000;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const now = Date.now();
+  const debug = request.nextUrl.searchParams.get('debug') === '1';
 
   // Try Turso first, fall back to in-memory
   try {
     if (isDbConfigured()) {
       const cached = await getCachedDigest();
-      if (cached) return NextResponse.json(cached);
-    } else if (memCache && now - memCacheAt < CACHE_TTL) {
+      if (cached && !debug) return NextResponse.json(cached);
+    } else if (memCache && now - memCacheAt < CACHE_TTL && !debug) {
       return NextResponse.json(memCache);
     }
-  } catch (e) {
-    // DB read failed — continue to generate fresh
-    console.error('Cache read failed:', e);
+  } catch (e: any) {
+    if (debug) return NextResponse.json({ step: 'cache_read', error: e.message });
   }
 
   try {
     const items = await fetchAllFeeds();
     const apiKey = process.env.GROQ_API_KEY || process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY;
+
+    if (debug) {
+      // In debug mode, don't catch LLM errors — let them surface
+      try {
+        const digest = apiKey
+          ? await synthesizeLLM(items, apiKey)
+          : synthesizeAlgorithmic(items);
+        return NextResponse.json({
+          debug: true,
+          source: digest.source,
+          themeCount: digest.themes.length,
+          itemCount: digest.itemCount,
+          summary: digest.summary.slice(0, 200),
+          apiKeyPresent: !!apiKey,
+          apiKeyPrefix: (apiKey || '').slice(0, 4),
+        });
+      } catch (e: any) {
+        return NextResponse.json({
+          step: 'synthesize',
+          error: e.message,
+          stack: e.stack?.split('\n').slice(0, 5),
+          apiKeyPresent: !!apiKey,
+        });
+      }
+    }
 
     const digest = apiKey
       ? await synthesizeLLM(items, apiKey)
