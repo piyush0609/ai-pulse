@@ -9,8 +9,18 @@ export interface FeedItem {
   sourceIcon: string;
   date: Date;
   category: FeedCategory;
-  quality?: 'hot' | 'top' | null; // 🔥 trending today, ⭐ high engagement
+  quality?: 'hot' | 'top' | null;
   engagement?: number;
-  relevanceScore?: number; // 0-100 based on keyword matches
-  whyMatters?: string; // One-liner on why this is useful
+  relevanceScore?: number;
+  whyMatters?: string;
+  isNew?: boolean;
+}
+
+export interface Bookmark {
+  id: string;
+  url: string;
+  title: string;
+  source: string;
+  sourceIcon: string;
+  savedAt: number;
 }
