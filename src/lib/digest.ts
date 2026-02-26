@@ -144,6 +144,30 @@ function getProvider(apiKey: string): LLMProvider {
   };
 }
 
+// Fix control characters inside JSON string values that LLMs often emit
+function escapeControlCharsInJson(raw: string): string {
+  let result = '';
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    const code = raw.charCodeAt(i);
+    if (escaped) { result += ch; escaped = false; continue; }
+    if (ch === '\\' && inString) { result += ch; escaped = true; continue; }
+    if (ch === '"') { inString = !inString; result += ch; continue; }
+    if (inString && code <= 0x1f) {
+      // Escape control characters that are invalid unescaped in JSON strings
+      if (code === 0x0a) result += '\\n';
+      else if (code === 0x0d) result += '\\r';
+      else if (code === 0x09) result += '\\t';
+      else result += '\\u' + code.toString(16).padStart(4, '0');
+    } else {
+      result += ch;
+    }
+  }
+  return result;
+}
+
 export async function synthesizeLLM(items: FeedItem[], apiKey: string): Promise<Digest> {
   const provider = getProvider(apiKey);
 
@@ -182,15 +206,10 @@ export async function synthesizeLLM(items: FeedItem[], apiKey: string): Promise<
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON found in LLM response');
 
-    // Clean common LLM JSON issues: trailing commas, unescaped newlines
-    let jsonStr = jsonMatch[0]
-      .replace(/,\s*([}\]])/g, '$1')           // trailing commas
-      .replace(/[\u2018\u2019]/g, "'")          // smart quotes
-      .replace(/[\u201C\u201D]/g, '"')          // smart double quotes
-      .replace(/\u2011/g, '-')                  // non-breaking hyphen
-      .replace(/\u2013/g, '-')                  // en dash
-      .replace(/\u2014/g, '-');                 // em dash
-    const parsed = JSON.parse(jsonStr);
+    // Robust JSON cleaning: escape control chars inside string values
+    const cleaned = escapeControlCharsInJson(jsonMatch[0])
+      .replace(/,\s*([}\]])/g, '$1');           // trailing commas
+    const parsed = JSON.parse(cleaned);
 
     // Map themes — annotations are inline with each item reference
     const allHighlights: DigestHighlight[] = [];
