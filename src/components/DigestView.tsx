@@ -112,25 +112,57 @@ export default function DigestView({ initialItems, initialFetchedAt }: DigestVie
   const [digest, setDigest] = useState<Digest | null>(null);
   const [allItems, setAllItems] = useState<FeedItem[]>(initialItems);
   const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState<string>('');
   const [showExplore, setShowExplore] = useState(false);
 
   const fetchDigest = useCallback(async () => {
     setLoading(true);
+    setProgress('Connecting...');
     try {
-      const res = await fetch('/api/digest');
+      const res = await fetch('/api/digest?stream=1');
       if (!res.ok) throw new Error('Failed to fetch digest');
-      const data = await res.json();
-      setDigest(data);
-      if (data.allItems) {
-        setAllItems(data.allItems.map((item: any) => ({
-          ...item,
-          date: new Date(item.date),
-        })));
+
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error('No stream');
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        let currentEvent = '';
+        for (const line of lines) {
+          if (line.startsWith('event: ')) {
+            currentEvent = line.slice(7);
+          } else if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6));
+            if (currentEvent === 'progress') {
+              setProgress(data.message);
+            } else if (currentEvent === 'digest') {
+              setDigest(data);
+              if (data.allItems) {
+                setAllItems(data.allItems.map((item: any) => ({
+                  ...item,
+                  date: new Date(item.date),
+                })));
+              }
+            } else if (currentEvent === 'error') {
+              console.error('Digest stream error:', data.message);
+            }
+          }
+        }
       }
     } catch (err) {
       console.error('Digest fetch failed:', err);
     } finally {
       setLoading(false);
+      setProgress('');
     }
   }, []);
 
@@ -158,7 +190,9 @@ export default function DigestView({ initialItems, initialFetchedAt }: DigestVie
     return (
       <div className="max-w-2xl mx-auto py-16 text-center">
         <div className="w-8 h-8 border-2 border-gray-200 dark:border-gray-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-sm text-gray-400 dark:text-gray-500">Putting today&apos;s digest together...</p>
+        <p className="text-sm text-gray-400 dark:text-gray-500 transition-all duration-300">
+          {progress || 'Putting today\u2019s digest together...'}
+        </p>
       </div>
     );
   }
