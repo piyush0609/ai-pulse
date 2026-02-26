@@ -74,6 +74,13 @@ export async function cacheDigest(id: string, data: any): Promise<void> {
   });
 }
 
+export async function clearDigestCache(): Promise<void> {
+  const db = getClient();
+  if (!db) return;
+  await ensureTables(db);
+  await db.execute('DELETE FROM digests');
+}
+
 // ─── Digest history ──────────────────────────────────────────────
 
 export async function getDigestHistory(limit = 10): Promise<any[]> {

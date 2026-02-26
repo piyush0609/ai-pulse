@@ -98,7 +98,7 @@ function getProvider(apiKey: string): LLMProvider {
       url: 'https://api.groq.com/openai/v1/chat/completions',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: (system, user) => ({
-        model: process.env.LLM_MODEL || 'llama-3.3-70b-versatile',
+        model: (process.env.LLM_MODEL || 'llama-3.3-70b-versatile').trim(),
         max_tokens: 3000,
         temperature: 0.7,
         messages: [
@@ -116,7 +116,7 @@ function getProvider(apiKey: string): LLMProvider {
       url: process.env.LLM_API_URL || 'https://api.openai.com/v1/chat/completions',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
       body: (system, user) => ({
-        model: process.env.LLM_MODEL || 'gpt-4o-mini',
+        model: (process.env.LLM_MODEL || 'gpt-4o-mini').trim(),
         max_tokens: 3000,
         temperature: 0.7,
         messages: [
@@ -133,7 +133,7 @@ function getProvider(apiKey: string): LLMProvider {
     url: 'https://api.anthropic.com/v1/messages',
     headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
     body: (system, user) => ({
-      model: process.env.LLM_MODEL || 'claude-haiku-4-5-20251001',
+      model: (process.env.LLM_MODEL || 'claude-haiku-4-5-20251001').trim(),
       max_tokens: 3000,
       system,
       messages: [{ role: 'user', content: user }],
