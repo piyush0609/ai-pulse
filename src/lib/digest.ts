@@ -101,6 +101,7 @@ function getProvider(apiKey: string): LLMProvider {
         model: (process.env.LLM_MODEL || 'llama-3.3-70b-versatile').trim(),
         max_tokens: 3000,
         temperature: 0.7,
+        response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: system },
           { role: 'user', content: user },
@@ -119,6 +120,7 @@ function getProvider(apiKey: string): LLMProvider {
         model: (process.env.LLM_MODEL || 'gpt-4o-mini').trim(),
         max_tokens: 3000,
         temperature: 0.7,
+        response_format: { type: 'json_object' },
         messages: [
           { role: 'system', content: system },
           { role: 'user', content: user },
