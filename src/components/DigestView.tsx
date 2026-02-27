@@ -133,18 +133,27 @@ export default function DigestView({ initialItems, initialFetchedAt }: DigestVie
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
 
-        let currentEvent = '';
-        for (const line of lines) {
-          if (line.startsWith('event: ')) {
-            currentEvent = line.slice(7);
-          } else if (line.startsWith('data: ')) {
-            const data = JSON.parse(line.slice(6));
-            if (currentEvent === 'progress') {
+        // SSE events are separated by \n\n — process complete events only
+        const blocks = buffer.split('\n\n');
+        buffer = blocks.pop() || ''; // keep incomplete block in buffer
+
+        for (const block of blocks) {
+          if (!block.trim()) continue;
+          const lines = block.split('\n');
+          let event = '';
+          let dataStr = '';
+          for (const line of lines) {
+            if (line.startsWith('event: ')) event = line.slice(7);
+            else if (line.startsWith('data: ')) dataStr = line.slice(6);
+          }
+          if (!event || !dataStr) continue;
+
+          try {
+            const data = JSON.parse(dataStr);
+            if (event === 'progress') {
               setProgress(data.message);
-            } else if (currentEvent === 'digest') {
+            } else if (event === 'digest') {
               setDigest(data);
               if (data.allItems) {
                 setAllItems(data.allItems.map((item: any) => ({
@@ -152,14 +161,32 @@ export default function DigestView({ initialItems, initialFetchedAt }: DigestVie
                   date: new Date(item.date),
                 })));
               }
-            } else if (currentEvent === 'error') {
+            } else if (event === 'error') {
               console.error('Digest stream error:', data.message);
             }
+          } catch (parseErr) {
+            console.warn('SSE parse error, skipping block:', parseErr);
           }
         }
       }
     } catch (err) {
       console.error('Digest fetch failed:', err);
+      // Fallback to non-streaming fetch
+      try {
+        const res = await fetch('/api/digest');
+        if (res.ok) {
+          const data = await res.json();
+          setDigest(data);
+          if (data.allItems) {
+            setAllItems(data.allItems.map((item: any) => ({
+              ...item,
+              date: new Date(item.date),
+            })));
+          }
+        }
+      } catch (fallbackErr) {
+        console.error('Fallback fetch also failed:', fallbackErr);
+      }
     } finally {
       setLoading(false);
       setProgress('');
